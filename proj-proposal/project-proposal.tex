@@ -1,0 +1,28 @@
+\documentclass{article}
+\usepackage[margins=2in, a4paper]{geometry}
+
+\begin{document}
+	\noindent
+	{\Large \textbf{EL2320 Project Proposal}}
+	\vspace{0.5cm}
+	
+	\noindent
+	\begin{tabular}{ll}
+		\textbf{Name:}  & Henrik Karlsson\\
+		\textbf{Email:} & \texttt{henrik10@kth.se}
+	\end{tabular}
+	\vspace{0.5cm}
+	
+	\noindent
+	\paragraph{Stratified particle filter and EKF mixture models} I will to implement stratified particle filter and mixture of EKF in Matlab, then test them on the datasets given by the labs. Once that is done I want to combine the approaches by allowing mixtures to alternate between EKF and particle filter depending on the variance in EKF/particles. Hopefully, this can result in faster computations. 
+	
+	The idea of the combined approach is that a particle filter will transform into an EKF if the distribution of particles can be modeled with an EKF, and that an EKF can turn into a particle filter when the distribution is not Gaussian (not oval enough, multimodal). Some of the immediate problems that needs to be addressed when implementing the idea are the following:
+	\begin{itemize}
+		\item When to switch between EKF and particle filter
+		\item How to switch between EKF and particle filter (number of particles, mean, weights, covariances, etc.)
+		\item Should we switch to particle filter or split into two EKF mixtures
+	\end{itemize}
+	
+	If I have time I will implement the EKF/Particle filter with adaptive number of particles or groups/mixtures.
+	
+\end{document}
