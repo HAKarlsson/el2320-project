@@ -1,0 +1,14 @@
+\section{Introduction}
+The Particle Filter (PF), also known as Sequential Importance Sampling and Resampling (SISR), is a Monte Carlo, or simulation based algorithm, for recursive Bayesian inference \cite{mlapp}. The PF consists of particles and associated importance weights that are propagated through time to approximated a target distribution. It only needs a proposal distribution, a likelihood and a dynamic model. The PF is used in many areas such as tracking, parameter estimation, robotics, etc.
+
+The PF is an improvement over the Sequential Importance Sampling (SIS) \cite{mlapp}. SIS have the problem of degeneracy; that is, after a few iterations, most of the particles will have negligible weight. The PF improves upon SIS by adding the resampling step where particles with low weight are eliminated and replaced by copies of the surviving particles. More specifically, the new set $\{\hat{z}_t^s\}_{s=1}^S$ is sampled from the distribution 
+\[p(z_t|y_{1:t}) \approx\sum_{s=1}^{S}w_t^s\delta_{z_t^s}(z_t).\] 
+However, this leads to another problem, particle deprivation.
+
+Particle deprivation is when the particles do not cover regions of high probability \cite{probRobo}, this is a significant problem of PF. This generally happens when the number of particles is not large enough and/or the target distribution is multi-modal. Particle deprivation occurs due to the sampling variance and thus the resampling step can wipe out all particles in the high density areas of the target distribution. The probability of this happening is non-zero at each re-sampling step and therefore it is only a matter of time until it happens. Solutions to particle deprivation is to add more particles, to randomly generated particles in each iteration, or use a better sampler.
+
+Multitarget tracking (MTT) is the localization and recursive detection of objects of interest based on sequential measurements. Some examples are aircraft tracking using radar, and tracking people through a video feed. In practice, there are many factors that contributes to uncertainty of an objects location such as noise in measurement, clutter and environment. Therefore, a probabilistic approach to the problem is required. Popular approaches are Bayesian Monte Carlo Estimation such as particle filtering.
+
+Particle filters have some problems with multitarget tracking. Due to that MTT problems are multi-modal, PF solutions tends to suffer from particle deprivation and will therefore lose targets. One of the solutions to this problem is use a sampler specifically made to track multiple targets.
+
+This paper compares different resampling techniques for PF in the context of multitarget tracking.
