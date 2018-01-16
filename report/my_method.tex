@@ -1,6 +1,40 @@
-\section{My Method}
-\subsection{Mixture Particle Filter}
-In Mixture Particle Filtering (MPF), the particles $z_t^i$ are clustered into $M$ different mixtures $\calI_{m,t}$ and each mixture $\calI_{m,t}$ are assigned a weight $\pi_{m,t}$. When resampling, particles are draw from the following mixture distribution:
+\section{Resampling methods}
+\subsection{Systematic Resampling}
+The systematic resampling method is widely used resampling method for particle filters. It is preferred because it is computationally simple and have good empirical performance \cite{douc2005comparison}. The systematic resampling method have shown to be empirically comparable with other resampling methods such as stratified sampling and residual resampling which in turn have been shown to be better than multinomial resampling \cite{douc2005comparison}.
+
+In practice it is implemented as follows:
+\begin{algorithm}[H]
+	\begin{algorithmic}
+		\State Draw: $r \sim U(0,1) $
+		\For{$i=0:M-1$}
+			\State $U^i \gets (i+r)/M$
+			\State $I^i \gets D^{inv}_w(U_i)$
+		\EndFor
+	\end{algorithmic}
+	\caption{Systematic Resampling algorithm}
+\end{algorithm}
+Where $D^{inv}_w$ is the inversion of the cumulative distribution function associated with the particle weights $\{w_t^i\}_{i=1}^{N}$, $M$ is the number of samples to draw, and $I^i$ is the index of the $i$'th sample. This resampling method is sensitive to the order particles before the resampling as that order changes the cumulative distribution function.
+
+\subsection{Mixture Resampling}
+The intuition behind mixture resampling is that we are not interested in resampling individual samples, but we are interested in sampling from high probability areas. One of the main problems of systematic resampling is that sampling variance can eliminate all particles in one area (figure \ref{fig:sysresamp}). Mixture resampling remedies this problem by representing areas as a cluster/mixture of particles and then resample particles from one cluster at the time. The number of particles resampled from one cluster is proportional to the weight of the area, thus if an area have 10\% of the weight, 10\% of the particles will be placed there (figure \ref{fig:mixresamp}).
+
+\begin{figure}
+	\centering
+	\begin{subfigure}[t]{2.5in}
+		\fbox{\includegraphics[width=\textwidth]{figs/cluster_demo1}}
+		\caption{Standard resampling from this distribution can eliminate the all orange particles due to sampling variance since there is nothing preventing the resampler from only selecting blue particles.}
+		\label{fig:sysresamp}
+	\end{subfigure}
+	~
+	\begin{subfigure}[t]{2.5in}
+		\fbox{\includegraphics[width=\textwidth]{figs/cluster_demo2}}
+		\caption{By clustering particles and thereafter resampling 10\% of the particles from the orange cluster and 90\% from the blue cluster, there will be exactly 10 orange and 90 blue particles in the new set.}
+		\label{fig:mixresamp}
+	\end{subfigure}
+	\caption{100 hundred particles to be resampled. 90\% of the weight is in the blue particles and 10\% is in the orange particles.}
+\end{figure}
+
+Let the particles $z_t^i$ be clustered into $M$ different clusters $\calI_{m,t}$ and each mixture $\calI_{m,t}$ are assigned a weight $\pi_{m,t}$. When resampling, particles are draw from the following mixture distribution:
 \begin{gather}
 p(z_t|y^{t-1}) = \sum_{m=1}^{M}\pi_{m,t}p_m(z_t|y^{t-1}).
 \label{trueMixture}
@@ -19,6 +53,6 @@ where the weights $\pi_{m,t}$ and $w_i^t$ are computed as follows:
 	\pi_{m,t} = \frac{\hat{\pi}_{m,t}}{\sum_{m'=1}^{M}\hat{\pi}_{m',t}}, ~\hat{\pi}_{m,t} = \sum_{i\in \calI_{m,t}} \hat{w}_t^i\\
 	w_t^i = \frac{\hat{w}_t^i}{\hat{\pi}_{c_i,t}}, ~\hat{w}_t^i = p(y_t|z_t^i)w_{t-1}^i.
 \end{gather}
-It can easily be shown that this approximation is identical to the approximation used in normal particle filtering. For full derivation of the Mixture Particle Filter see \cite{vermaak2003maintaining}.
+It can be shown that this approximation is identical to the approximation used in normal particle filtering, thus it is valid. For full derivation of the Mixture Particle Filter see \cite{vermaak2003maintaining}.
 
-The difference between the PF and the MPF comes from the resampling step.
+The difference between the PF and the MPF comes from the resampling step where we draw samples from one mixture at the time.
