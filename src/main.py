@@ -1,12 +1,32 @@
 #!/usr/bin/python
 import numpy as np
 import cv2
+<<<<<<< HEAD
+import sys
+=======
+>>>>>>> d010e1e11202591ae857699e4d7004aa79574d3d
 from AntTracker import *
 from aux_func import get_predictor
 
 
 predictor = get_predictor()
 
+<<<<<<< HEAD
+tracker = sys.argv[1]
+
+
+if tracker == "Sys":
+    pf = SystematicAT(predictor)
+elif tracker == "Para":
+    pf = ParallelAT(predictor)
+elif tracker == "Hard":
+    pf = HardClusteringAT(predictor)
+elif tracker == "Soft":
+    pf = SoftClusteringAT(predictor)
+else:
+    print("No tracker selected.")
+    exit()
+=======
 tracker = 1
 
 
@@ -14,6 +34,7 @@ if tracker == 0:
     pf = SystematicAT(predictor)
 elif tracker == 1:
     pf = KMeansAT(predictor)
+>>>>>>> d010e1e11202591ae857699e4d7004aa79574d3d
 
 p1 = (16, 16)
 p2 = (720-16, 480-16)

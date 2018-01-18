@@ -1,6 +1,13 @@
 import numpy as np
+<<<<<<< HEAD
+from numpy.linalg import norm
 from numpy.random import uniform, normal, randint
 from sklearn.cluster import KMeans
+from scipy.cluster.vq import kmeans2
+=======
+from numpy.random import uniform, normal, randint
+from sklearn.cluster import KMeans
+>>>>>>> d010e1e11202591ae857699e4d7004aa79574d3d
 from aux_func import normImg
 from math import ceil
 
@@ -61,6 +68,11 @@ def distribute(weights, N):
         rollover = size - distri[c]
     return distri
 
+<<<<<<< HEAD
+def clusterScore(clusters, label, samples):
+    return np.mean(norm(samples - clusters[label, :], axis=1))
+=======
+>>>>>>> d010e1e11202591ae857699e4d7004aa79574d3d
 
 OFFSETS = (720 * np.repeat(np.arange(32), 32) +
            np.tile(np.arange(32), 32)).reshape(1, -1)
@@ -117,24 +129,45 @@ class ATBase:
 
 class SystematicAT(ATBase):
 
-    def __init__(self, predictor, N=1000):
+    def __init__(self, predictor, N=400):
         ATBase.__init__(self, predictor, 10 * N, 3)
         self.N = N
 
     def resample(self):
         self.S = sys_resample(self.S, self.N)
 
+class ParallelAT(ATBase):
 
-class KMeansAT(ATBase):
+    def __init__(self, predictor, N=800, M=40):
+        ATBase.__init__(self, predictor, 10 * N, 4)
+        self.N = N
+        self.S[:, 3] = np.repeat(np.arange(M), 10 * N / M)
+        self.M = M
 
-    def __init__(self, predictor, N=1000, M=20):
+    def resample(self):
+        S = self.S
+        Sp = np.zeros((self.N, 4))
+        Pi = clusterWeight(S[:,2], S[:,3], self.M)
+        # the base address of the cluster
+        size = self.N / self.M
+        for m in range(self.M):
+            # ind = index of particles from mixture m
+            ind = (S[:, 3] == m)
+            Sp[m*size:(m+1)*size] = sys_resample(S[ind, :], size)
+        Sm[:, 2] = 1. / self.N
+        self.S = Sp
+
+
+class SoftClusteringAT(ATBase):
+
+    def __init__(self, predictor, N=400, M=20):
         ATBase.__init__(self, predictor, 10 * N, 4)
         self.N = N
         # Number of mixtures
         self.M = M
         # clustering
         self.clusterer = KMeans(M, algorithm='full',
-                                random_state=1, n_init=1, max_iter=10)
+                                random_state=1, n_init=5, max_iter=10)
         self.S[:, 3] = np.repeat(np.arange(M), 10 * N / M)
 
     def cluster(self):
@@ -155,7 +188,50 @@ class KMeansAT(ATBase):
             Sm = sys_resample(S[ind, :], size_m)
             Sp[base:base + size_m] = Sm
             base += size_m
-        Sm[:, 2] = 1. / self.N
+        self.S = Sp
+
+    def sisr(self, frame):
+        self.predict()
+        self.observe(frame)
+        self.resample()
+        self.cluster()
+        return self.S
+
+
+class HardClusteringAT(ATBase):
+
+    def __init__(self, predictor, N=400, M=20):
+        ATBase.__init__(self, predictor, 10 * N, 4)
+        self.N = N
+        # Number of mixtures
+        self.M = M
+        self.S[:, 3] = np.repeat(np.arange(M), 10 * N / M)
+
+    def cluster(self):
+        score = 720*360
+        sampPos = self.S[:, 0:2]
+        for i in range(5):
+            centroids, labels = kmeans2(sampPos, self.M)
+            newScore = clusterScore(centroids, labels, sampPos)
+            if newScore < score:
+                score = newScore
+                self.S[:,3] = labels
+
+    def resample(self):
+        S = self.S
+        Sp = np.zeros((self.N, 4))
+        Pi = clusterWeight(S[:,2], S[:,3], self.M)
+        mixture_sizes = distribute(Pi, self.N)
+        # the base address of the cluster
+        base = 0
+        for m, size_m in enumerate(mixture_sizes):
+            if size_m == 0:
+                continue
+            # ind = index of particles from mixture m
+            ind = (S[:, 3] == m)
+            Sm = sys_resample(S[ind, :], size_m)
+            Sp[base:base + size_m] = Sm
+            base += size_m
         self.S = Sp
 
     def sisr(self, frame):

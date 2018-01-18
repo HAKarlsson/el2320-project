@@ -76,4 +76,29 @@ The main difference between standard resampling methods (e.g. systematic resampl
 
 When drawing $n$ samples from component $m$, we have to make sure that sum of the weights of particles in $m$ have to be $\pi_{m,t}$. Thus, the particle weights have to be $\frac{\pi_{m,t}}{n}$. Let $N$ be the total number of particles drawn and let $n=\pi_{m,t}N$; that is, $n$ is proportional to the weight $\pi_{m,t}$. Then the new particle weights are $\frac{1}{N}$. For a complete derivation, see \cite{vermaak2003maintaining}.
 \subsubsection{Clustering step}
+Clustering is the task to group objects in such a way that objects in the same group are more similar to each other than other groups. The algorithms we are interested in are two versions of the k-means clustering algorithms, Lloyd's algorithm and the EM algorithm.
+
+\paragraph{Lloyd's algorithm}Given an initial set of $M$ centroids $m_1, m_2, \dots, m_M$, the k-means algorithm proceeds in two steps:
+\begin{description}
+	\setlength{\itemindent}{0.2in}
+	\item[Assignment:] Every object $z^i$ is assigned to the nearest centroid $k$. The distance is measured with the euclidean distance. 
+	\item[Update:] New centroids $m'_k$ are calculated by taking the mean of each object $z^i$ that belongs to $k$; that is, $m'_k = \frac{1}{|\calI_k|}\sum_{i \in \calI_k}z^i$,
+	where $\calI_k$ is the set of objects assigned to centroid $k$.
+\end{description}
+this is done iteratively until the assignments no longer changes.
+
+\paragraph{EM algorithm} The algorithm starts with an initial initial set of mean vectors $m_1, m_2, \dots, m_M$. Then the EM algorithm proceeds in 2 steps:
+\begin{description}
+	\setlength{\itemindent}{0.2in}
+	\item[Expectation:] Every object $i$ is partially assigned to each mixture $k$, this is represented by a weight 
+	$w_k^i = \frac{p_k(z^i)}{\sum_{k'=1}^{M}p_{k'}(z^i)}$
+	where $p_k(z^i) = \calN(z^i|m_k, \sigma^2I)$.
+	\item[Maximization:] New means $m'_k$ are calculated by taking the weighted mean of each object $z^i$; that is, $m'_k = \frac{\sum_{i \in \calI_k}w_k^iz^i}{\sum_{i \in \calI_k}w_k^i}$.
+\end{description}
+this is repeated until convergence. The EM algorithm for clustering is based on the EM algorithm for GMM.
+
+Both algorithms suffers from local minima; that is, the optimal clustering is not found. Because of the local minima problem, the algorithms may need to be run several times to find a better clustering. They algorithms are also biased towards spherical or hyper-spherical clusters. The EM algorithm is in general better than Lloyd's algorithm since it has fewer local minimas, however, Lloyd's algorithm is easier to implement and faster.
+
+\subsection{Parallel Particle Filter}
 Clustering is the task to group objects in such a way that objects in the same group are more similar to each other than other groups. The algorithms we are interested in are the k-means algorithm and the EM algorithm for clustering since they are computationally fast relative to other algorithms.
+
