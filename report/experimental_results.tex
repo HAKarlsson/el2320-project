@@ -1,1 +1,6 @@
-\section{Experimental Results}
+\section{Experiment and Results}
+The comparison was conducted by tracking ants in a 1 minute long video. The accuracy of the algorithms at time $t$ was calculated as:
+\begin{equation}
+	\mathrm{Accuracy}_t(A, P) = \frac{1}{20}\sum_{n=1}^{20}\mathrm{Represented}(A_n, P)
+\end{equation}
+where $A$ is the coordinates of the ants and $P$ is the set of particles. $\mathrm{Represented}(A_n,P)$ returns $1$ if there is a particle $p \in P$ that is not more than 16 pixels away from ant $n$.
