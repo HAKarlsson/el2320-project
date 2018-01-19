@@ -64,17 +64,15 @@ Inserting (\ref{eq:clustcomp}) into (\ref{eq:mix}) gives us the following approx
 \begin{gather}
 	q(z_t|y^{t-1}) = \sum_{m=1}^{M}\pi_{m,t}\sum_{i \in \calI_{m,t}}w^i_t\delta_{z_t^i}(z_t)
 \end{gather}
-where the weights $\pi_{m,t}$ and $w_i^t$ are computed as follows:
+where the weights $\pi_{m,t}$ and $w_t^i$ are computed as follows:
 \begin{gather}
-	\pi_{m,t} = \frac{\hat{\pi}_{m,t}}{\sum_{m'=1}^{M}\hat{\pi}_{m',t}}, ~w_t^i = \frac{\hat{w}_t^i}{\hat{\pi}_{c_i,t}}\\
-	\hat{\pi}_{m,t} = \sum_{i\in \calI_{m,t}} \hat{w}_t^i, ~\hat{w}_t^i = p(y_t|z_t^i)w_{t-1}^i.
+	w_t^i = \frac{\hat{w}_t^i}{\sum_{i\in \calI_{m,t}} \hat{w}_t^i}, ~\hat{w}_t^i = p(y_t|z_t^i)w_{t-1}^i\\
+	\pi_{m,t} = \frac{\pi_{m,t}w_{m,t}}{\sum_{m'=1}^{M}\pi_{m',t}w_{m',t}}, ~w_{m,t} = \sum_{i\in \calI_{m,t}} \hat{w}_t^i.
 \end{gather}
 It can be shown that this approximation is identical to the approximation used in normal particle filtering. For a complete derivation, see \cite{vermaak2003maintaining}.
 
 \subsubsection{Resampling step}
-The main difference between standard resampling methods (e.g. systematic resampling), and the cluster resampling is that we draw samples from mixture components. When drawing samples from one mixture, we can use standard resampling methods such as systematic resampling. 
-
-When drawing $n$ samples from component $m$, we have to make sure that sum of the weights of particles in $m$ have to be $\pi_{m,t}$. Thus, the particle weights have to be $\frac{\pi_{m,t}}{n}$. Let $N$ be the total number of particles drawn and let $n=\pi_{m,t}N$; that is, $n$ is proportional to the weight $\pi_{m,t}$. Then the new particle weights are $\frac{1}{N}$. For a complete derivation, see \cite{vermaak2003maintaining}.
+The main difference between standard resampling methods (e.g. systematic resampling), and the cluster resampling is that we draw samples from mixture components. When drawing samples from one mixture, we can use standard resampling methods such as systematic resampling. When drawing $n$ samples from a mixture component $m$, it is important to note that the samples are drawn independently of other components, thus the new particles weights are $\frac{1}{n}$.
 \subsubsection{Clustering step}
 Clustering is the task to group objects in such a way that objects in the same group are more similar to each other than other groups. The algorithms we are interested in are two versions of the k-means clustering algorithms, Lloyd's algorithm and the EM algorithm.
 
@@ -100,5 +98,4 @@ this is repeated until convergence. The EM algorithm for clustering is based on 
 Both algorithms suffers from local minima; that is, the optimal clustering is not found. Because of the local minima problem, the algorithms may need to be run several times to find a better clustering. They algorithms are also biased towards spherical or hyper-spherical clusters. The EM algorithm is in general better than Lloyd's algorithm since it has fewer local minimas, however, Lloyd's algorithm is easier to implement and faster.
 
 \subsection{Parallel Particle Filter}
-Clustering is the task to group objects in such a way that objects in the same group are more similar to each other than other groups. The algorithms we are interested in are the k-means algorithm and the EM algorithm for clustering since they are computationally fast relative to other algorithms.
 
