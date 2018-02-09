@@ -324,4 +324,6 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-*.avi
+.npy
+.mat
+.avi
