@@ -1,0 +1,26 @@
+\section{Experiment}
+\paragraph{Dataset}
+The dataset used for the comparison is the ant video dataset from \cite{ants_dataset}. The video consists of 20 ants wandering in a baking dish. With the video, a set of ground truths for the ants' positions is provided. Minutes 2-5 of the video was used to generate images for training an observation model. The first minute was used to test the accuracy of the algorithms.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textwidth]{figs/ants_ex}
+	\caption{A frame from the ant dataset \cite{ants_dataset}.}
+\end{figure}
+
+\paragraph{Performance metric}
+The accuracy of the algorithms at time $t$ was calculated as:
+\begin{equation}
+	\mathrm{Accuracy}_t(A, P) = \frac{1}{20}\sum_{n=1}^{20}\mathrm{Represented}(A_n, P)
+\end{equation}
+where $A$ is the coordinates of the ants and $P$ is the set of particles. $\mathrm{Represented}(A_n,P)$ returns $1$ if there is a particle $p \in P$ that is not more than 16 pixels away from ant $n$. This means that one particle can classify more than one ant as represented.
+
+\paragraph{Particle model}
+Each particle represents a possible location of the ant. $z_t^i = (x, y)$ where $(x,y)$ is the coordinate of the particle on the frame. The observation model is deep neural network consisting of two hidden layers with fan-out 32 using ReLu as activation function. The observation model takes a $32 \times 32$ pixel gray scale frame with $(x,y)$ in the center, this is enough to cover a possible ant. The motion model is:
+\begin{equation}
+	D(x_{t}|x_{t-1}) = \calN(x_t|x_{t-1}, \mathrm{I}_2 5^2 )
+\end{equation}
+where $\mathrm{I}_2$ is a $2\times 2$ identity matrix.
+
+\paragraph{Resampling methods}
+The resampling methods tested were Systematic resampling, Cluster resampling with Lloyd's algorithm and EM algorithm and the Multi Particle Filter (MPF) resampling. The number of particles used were 400, this is 20 particles per ant. For the cluster resampling methods, the number of clusters were set to 20 and 40, and the number of particles per cluster was set to be proportional to the total likelihood of the particle in the cluster. To simplify the algorithm, the cluster weights were ignored since we don not use them for tracking the ants, only the presence of the clusters was needed. For the MPF resampling, the number of parallel particle filters were set to 20 and 40 and the elimination threshold $\tau$ was set to $10^{-6}$.

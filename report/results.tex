@@ -1,0 +1,38 @@
+\section{Results}
+The results shows that the Systematic resampling method is the worst of the methods tested, and the best method is the Multi Particle Filter (MPF) resampling but it has some problems. The Systematic resampling method is by far the worst method, most of the time it manages to represent only one ant (see figure \ref{fig:sys}). The Cluster resampling method is better when used with Lloyd's algorithm for clustering (see figure \ref{fig:lloyd} and \ref{fig:em}). Increasing the number of clusters makes the EM variant much worse at representing ants, the Lloyd variant is only slightly affected. The MPF method is much better at representing the ants, increasing the number of particle filters makes it even better (see figure \ref{fig:multi}). However, the MPF method have one significant drawback, it needs a carefully selected threshold in order to eliminate bad particle filters, as seen in figure \ref{fig:img}, some clusters of particles are not near any ant.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.45\textwidth]{../figs/sys}~
+	\caption{Accuracy of Systematic resampling. The filter was run 10 independent times, the green line is the mean, the area is one standard deviation away from the mean. }
+	\label{fig:sys}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.45\textwidth]{../figs/soft20} ~\includegraphics[width=0.45\textwidth]{../figs/soft40}
+	\caption{Accuracy of Cluster resampling using EM algorithm for clustering. The filter was run 10 independent times, the green line is the mean, the area is one standard deviation away from the mean. Left: 20 clusters. Right: 40 clusters.}
+	\label{fig:em}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.45\textwidth]{../figs/hard20} ~\includegraphics[width=0.45\textwidth]{../figs/hard40}
+	\caption{Accuracy of Cluster resampling using Lloyd's algorithm for clustering. The filter was run 10 independent times, the green line is the mean, the area is one standard deviation away from the mean. Left: 20 clusters. Right: 40 clusters.}
+	\label{fig:lloyd}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.45\textwidth]{../figs/para20} ~\includegraphics[width=0.45\textwidth]{../figs/para40}
+	\caption{Accuracy of MPF resampling. The filter was run 10 independent times, the green line is the mean, the area is one standard deviation away from the mean. Left: 20 particle filters. Right: 40 particle filters.}
+	\label{fig:multi}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.33\textwidth]{../figs/sysImg}~
+	\includegraphics[width=0.33\textwidth]{../figs/hardImg20}~
+	\includegraphics[width=0.33\textwidth]{../figs/paraImg40}~
+	\caption{Particles locations after 10 seconds for three different algorithms. From the left: Systematic resampling, Cluster resampling (Lloyd's), and MPF resampling. Note that the MPF Resampling have several particle clusters not close to ants.}
+	\label{fig:img}
+\end{figure}

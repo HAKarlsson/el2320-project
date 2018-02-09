@@ -35,7 +35,7 @@ The idea behind cluster resampling is that we are not interested in particles, w
 \end{figure}
 \subsubsection{Algorithm}
 The generic algorithm for ones step of cluster resampling is the following:
-\begin{enumerate}[label=\textbf{step \arabic*:}]
+\begin{enumerate}[label=\textbf{step \arabic*:}, noitemsep]
 	\setlength{\itemindent}{.25in}
 	\item Propagate particles
 	
@@ -95,7 +95,22 @@ this is done iteratively until the assignments no longer changes.
 \end{description}
 this is repeated until convergence. The EM algorithm for clustering is based on the EM algorithm for GMM.
 
-Both algorithms suffers from local minima; that is, the optimal clustering is not found. Because of the local minima problem, the algorithms may need to be run several times to find a better clustering. They algorithms are also biased towards spherical or hyper-spherical clusters. The EM algorithm is in general better than Lloyd's algorithm since it has fewer local minimas, however, Lloyd's algorithm is easier to implement and faster.
+Both algorithms suffers from local minima; that is, the optimal clustering is not found. Because of the local minima problem, the algorithms may need to be run several times with different initializations to find a better clustering. They algorithms are also biased towards spherical or hyper-spherical clusters. The EM algorithm is in general better than Lloyd's algorithm since it has fewer local minima, however, Lloyd's algorithm is easier to implement and faster. The EM algorithm will always assign at least one sample to every mixture, therefore one cluster that should be represented by one mixture may end up being represented by more than one mixture.
 
-\subsection{Parallel Particle Filter}
+\subsection{Multi Particle Filter Resampling}
+The Multi Particle Filter (MPF) resampling method is based on the idea that we have a collection of particle filters, each of which will hopefully converges on different modes of the target distribution. This filter is represented by
+\begin{equation}
+	p(z_t|y^t) \approx \frac{1}{M}\sum_{m=1}^{M}\tilde{p}^m(z_t|y^t)
+\end{equation}
+where $M$ is the number of sub particle filters and $\tilde{p}^m(z_t|y^t)$ is the approximation made by the $m$'th particle filter.
 
+The problem with this method is modes might disappear resulting in particle filters with negligible particles. We will remove those sub particle filters in the following way: 
+\begin{enumerate}[noitemsep]
+	\item For each sub particle filter $m$ calculate
+	\begin{equation}
+	\eta_{m,t} = \frac{w_{m,t}}{w_{m,t}}, ~ w_{m,t} = \sum_{i=1}^N z_{m,t}^i
+	\end{equation}
+	where $M$ is the number of sub particle filters and $N$ is the number of particles per filter.
+	
+	\item If $\eta_{m,t} < \tau$ remove particle filter $m$. $\tau$ is threshold that should be chosen so that only negligible particle filters are removed.
+\end{enumerate}

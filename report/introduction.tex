@@ -11,4 +11,6 @@ Multitarget tracking (MTT) is the localization and recursive detection of object
 
 Particle filters have some problems with multitarget tracking. Due to that MTT problems are multi-modal, PF solutions tends to suffer from particle deprivation and will therefore lose targets. One of the solutions to this problem is use a sampler specifically made to track multiple targets.
 
-This paper compares different resampling techniques for PF in the context of multitarget tracking.
+This paper compares different resampling methods for PF in the context of multitarget tracking in videos. The video used for evaluating the methods was a 1 minute video of ants from \cite{ants_dataset}. The resampling methods tested Systematic resampling, a simplified Cluster resampling and Multi Particle Filter (MPF) resampling. The Cluster resampling was tested with two different algorithm for clustering, Lloyd's algorithm and EM algorithm. 
+
+The results shows that Systematic resampling was the worst method and the MPF resampling was the best but has some issues. The MPF resampling suffers from having negligible sub particle filters with negligible particles and ended up having particles where no ants were present. Results also showed that the performance of MPF resampling increased with more sub filters. The Cluster resampling methods proved to be moderately good with no negligible particles as in MPF but they were considerably slower. The Lloyd's version of clustering was faster and more accurate than the EM variant.
